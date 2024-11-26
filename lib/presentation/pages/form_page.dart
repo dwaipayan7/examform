@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Alias the form_bloc to avoid conflict with Flutter's FormState
-import '../../bloc/form_bloc.dart' as formBloc;
+
 import '../../domain/entities/form_entity.dart';
+import '../bloc/form_bloc.dart' as formBloc;
 import '../widget/custom_text_form_field.dart';
 
 class FormScreen extends StatefulWidget {
@@ -14,10 +15,17 @@ class FormScreen extends StatefulWidget {
 }
 
 class _FormScreenState extends State<FormScreen> {
-
   final _formKey = GlobalKey<FormState>();
-  late String _name, _email, _phone, _examCourse;
-  late DateTime _dob;
+  late String _name, _email, _phone, _examCourse, _location;
+
+  // Example locations for the dropdown
+  final List<String> _locations = [
+    'Kolkata',
+    'Howrah',
+    'Kalyani',
+    'Bethuadahari',
+    'Krishnanagar'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +65,13 @@ class _FormScreenState extends State<FormScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      Image.asset(
+                        'assets/file.png',
+                        fit: BoxFit.contain,
+                        width: double.infinity, // Set desired width
+                        height: 180, // Set desired height
+                      ),
+
                       // Name field
                       CustomTextFormField(
                         labelText: 'Name',
@@ -76,7 +91,33 @@ class _FormScreenState extends State<FormScreen> {
                         labelText: 'Exam Course',
                         onSaved: (value) => _examCourse = value!,
                       ),
-                      SizedBox(height: 15,),
+
+                      // Dropdown for selecting location
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: 'Select Location',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        items: _locations.map((location) {
+                          return DropdownMenuItem<String>(
+                            value: location,
+                            child: Text(location),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _location = value!;
+                          });
+                        },
+                        validator: (value) =>
+                        value == null ? 'Please select a location' : null,
+                        onSaved: (value) => _location = value!,
+                      ),
+
+                      SizedBox(height: 15),
+
                       // Submit button
                       ElevatedButton(
                         onPressed: () {
@@ -86,42 +127,36 @@ class _FormScreenState extends State<FormScreen> {
                               name: _name,
                               email: _email,
                               phone: _phone,
-                              examCourse: _examCourse,
-                              dob: DateTime.now(),
+                              subject: _examCourse,
+                              examDate: DateTime.now(),
+                              location: _location, // Add location to the form
                             );
-                            context.read<formBloc.FormBloc>().add(formBloc.SubmitFormEvent(form));
+                            context.read<formBloc.FormBloc>().add(
+                              formBloc.SubmitFormEvent(form),
+                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white, backgroundColor: Colors.blue[300], // Text color
-                          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16), // Padding inside the button
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blue[300], // Text color
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32, vertical: 16), // Padding
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0), // Rounded corners
                           ),
                           elevation: 8, // Button shadow
                         ),
-                        child: Text(
+                        child: const Text(
                           'Submit',
                           style: TextStyle(
                             fontSize: 18, // Text size
                             fontWeight: FontWeight.bold, // Text boldness
-                            letterSpacing: 1.2, // Slight space between letters for a modern look
+                            letterSpacing: 1.2, // Slight space between letters
                           ),
                         ),
                       ),
 
-                      // Get Forms button
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     context.read<formBloc.FormBloc>().add(formBloc.GetFormsEvent());
-                      //   },
-                      //   // child: Text('Get Forms'),
-                      // ),
-                      // Skeletonizer for loading forms
-                      if (state is formBloc.FormLoading)
-                        _buildSkeletonLoader(), // Skeleton loader widget here
-                  
-                      // Display fetched forms
+                      if (state is formBloc.FormLoading) _buildSkeletonLoader(),
                       if (state is formBloc.FormLoadSuccess)
                         ...state.forms.map((form) {
                           return ListTile(
@@ -129,8 +164,6 @@ class _FormScreenState extends State<FormScreen> {
                             subtitle: Text(form.email),
                           );
                         }).toList(),
-                  
-                      // Error handling
                       if (state is formBloc.FormLoadFailure)
                         Text('Error: ${state.error}'),
                     ],
@@ -147,40 +180,45 @@ class _FormScreenState extends State<FormScreen> {
   // Skeleton loader widget
   Widget _buildSkeletonLoader() {
     return Column(
-      children: List.generate(3, (index) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          children: [
-            Container(
-              width: 60.0,
-              height: 60.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(8.0),
+      children: List.generate(
+        3,
+            (index) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            children: [
+              Container(
+                width: 60.0,
+                height: 60.0,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
               ),
-            ),
-            SizedBox(width: 16.0),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 16.0,
-                    color: Colors.grey[300],
-                  ),
-                  SizedBox(height: 8.0),
-                  Container(
-                    width: 150.0,
-                    height: 16.0,
-                    color: Colors.grey[300],
-                  ),
-                ],
+              SizedBox(width: 16.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 16.0,
+                      color: Colors.grey[300],
+                    ),
+                    SizedBox(height: 8.0),
+                    Container(
+                      width: 150.0,
+                      height: 16.0,
+                      color: Colors.grey[300],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 }
+
+

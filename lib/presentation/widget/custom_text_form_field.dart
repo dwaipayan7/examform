@@ -25,19 +25,19 @@ class CustomTextFormField extends StatelessWidget {
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(25.0),
             borderSide: BorderSide(color: Colors.blue[300]!, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(25.0),
             borderSide: BorderSide(color: Colors.blue[900]!, width: 2.0), // Border color when focused
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(25.0),
             borderSide: BorderSide(color: Colors.red, width: 1.5),
           ),
           focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(25.0),
             borderSide: BorderSide(color: Colors.red, width: 2.0),
           ),
         ),

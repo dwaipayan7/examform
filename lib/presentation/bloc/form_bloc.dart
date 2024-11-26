@@ -3,7 +3,7 @@ import 'package:examform/data/model/form_model.dart';
 import 'package:examform/data/repository/form_repository.dart';
 import 'package:meta/meta.dart';
 
-import '../domain/entities/form_entity.dart';
+import '../../domain/entities/form_entity.dart';
 
 part 'form_event.dart';
 part 'form_state.dart';
@@ -17,17 +17,18 @@ class FormBloc extends Bloc<FormEvent, FormState> {
   }
 
   // Method to handle form submission
-  Future<void> _onFormSubmitForm(SubmitFormEvent event, Emitter<FormState> emit) async {
+  Future<void> _onFormSubmitForm(
+      SubmitFormEvent event, Emitter<FormState> emit) async {
     emit(FormSubmitting());
 
     try {
       final formModel = FormModel(
-        name: event.form.name,
-        email: event.form.email,
-        phone: event.form.phone,
-        examCourse: event.form.examCourse,
-        dob: event.form.dob,
-      );
+          name: event.form.name,
+          email: event.form.email,
+          phone: event.form.phone,
+          subject: event.form.subject,
+          location: event.form.location,
+          examDate: event.form.examDate);
       await repository.submitForm(formModel);
       emit(FormSubmitSuccess());
     } catch (e) {

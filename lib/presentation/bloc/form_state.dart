@@ -5,9 +5,9 @@ sealed class FormState {}
 
 final class FormInitial extends FormState {}
 
-class FormSubmitting extends FormState{}
+class FormSubmitting extends FormState{} //loading State
 
-class FormSubmitSuccess extends FormState{}
+class FormSubmitSuccess extends FormState{} // success state
 
 class FormSubmitFailure extends FormState{
   final String error;
@@ -15,8 +15,8 @@ class FormSubmitFailure extends FormState{
   FormSubmitFailure({required this.error});
 
 }
-//Load States
 
+//Load States
 class FormLoading extends FormState{}
 
 class FormLoadSuccess extends FormState{
